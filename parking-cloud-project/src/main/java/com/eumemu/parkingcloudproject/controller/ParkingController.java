@@ -1,17 +1,21 @@
 package com.eumemu.parkingcloudproject.controller;
 
+import com.eumemu.parkingcloudproject.controller.dto.ParkingCreateDTO;
 import com.eumemu.parkingcloudproject.controller.dto.ParkingDTO;
 import com.eumemu.parkingcloudproject.controller.mapper.ParkingMapper;
 import com.eumemu.parkingcloudproject.model.Parking;
 import com.eumemu.parkingcloudproject.service.ParkingService;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
 @RequestMapping("/parking")
+@Api(tags = "Parking Controller")
 public class ParkingController {
 
     private final ParkingService parkingService;
@@ -24,10 +28,28 @@ public class ParkingController {
     }
 
     @GetMapping
-    public List<ParkingDTO> findAll(){
+    @ApiOperation("find all parkings")
+    public ResponseEntity<List<ParkingDTO>>  findAll(){
        List<Parking> parkingList= parkingService.findAll();
         List<ParkingDTO> result = parkingMapper.toParkingDTOList(parkingList);
-        return result;
+        return ResponseEntity.ok(result);
     }
 
+    @GetMapping("/{id}")
+    @ApiOperation("find parkings for id")
+    public ResponseEntity<ParkingDTO>  findById(@PathVariable String id){
+        Parking parking= parkingService.findById(id);
+        ParkingDTO result = parkingMapper.toParkingDTO(parking);
+        return ResponseEntity.ok(result);
+    }
+
+    @PostMapping
+    @ApiOperation("create a new parking")
+    public ResponseEntity<ParkingDTO>  create(@RequestBody ParkingCreateDTO dto){
+        var parkingCreate = parkingMapper.toParkingCreate(dto);
+        var parking = parkingService.create(parkingCreate);
+        var result = parkingMapper.toParkingDTO(parking);
+        return ResponseEntity.status(HttpStatus.CREATED).body(result);
+
+    }
 }
