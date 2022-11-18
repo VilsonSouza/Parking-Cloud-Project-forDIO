@@ -36,7 +36,7 @@ public class ParkingController {
     }
 
     @GetMapping("/{id}")
-    @ApiOperation("find parkings for id")
+    @ApiOperation("find parkings with id")
     public ResponseEntity<ParkingDTO>  findById(@PathVariable String id){
         Parking parking= parkingService.findById(id);
         ParkingDTO result = parkingMapper.toParkingDTO(parking);
@@ -52,4 +52,13 @@ public class ParkingController {
         return ResponseEntity.status(HttpStatus.CREATED).body(result);
 
     }
+
+
+    @DeleteMapping("/{id}")
+    @ApiOperation("delete parkings")
+    public ResponseEntity delete(@PathVariable String id){
+        parkingService.delete(id);
+        return ResponseEntity.noContent().build();
+    }
+
 }
